@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>朗缪尔环流 | Langmuir Circulation</title>
+<style>
+:root{
+  --deep:#062a43; --mid:#0d5c86; --sea:#1a8fbd; --foam:#eaf7fc;
+  --ink:#102e3d; --muted:#5d7887; --line:#d5e7f0; --accent:#e08d2b; --green:#1f7a4d;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#eef6fa;color:var(--ink);line-height:1.75;
+  font-family:"Segoe UI","Microsoft YaHei","PingFang SC","Hiragino Sans GB","Noto Sans SC",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased}
+header{background:linear-gradient(135deg,#062a43 0%,#0d5c86 55%,#1a8fbd 100%);color:#fff;
+  padding:52px 20px 58px;text-align:center;position:relative}
+header .kicker{letter-spacing:.28em;font-size:12px;opacity:.7;margin:0 0 14px}
+header h1{margin:0;font-size:clamp(28px,5vw,44px);font-weight:700;letter-spacing:.02em}
+header h1 span{display:block;font-size:clamp(13px,2vw,17px);font-weight:400;
+  letter-spacing:.16em;opacity:.75;margin-top:10px;text-transform:uppercase}
+.chips{margin:26px auto 0;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:760px}
+.chips span{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.28);
+  color:#fff;font-size:13px;padding:5px 14px;border-radius:999px;backdrop-filter:blur(2px)}
+.wrap{max-width:1000px;margin:-26px auto 0;padding:0 20px 72px}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px 28px;
+  box-shadow:0 12px 30px -18px rgba(6,42,67,.28);margin-bottom:26px}
+.lead{background:linear-gradient(135deg,#fff6e9,#fffdf8);border-color:#f3d9b3;position:relative}
+.lead .tag{color:#a9660f;font-size:12px;letter-spacing:.2em;margin:0 0 8px}
+.lead p{margin:0;font-size:17px}
+.lead strong{color:#a9660f}
+h2{font-size:20px;margin:0 0 18px;padding-left:14px;position:relative;color:var(--deep)}
+h2:before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:5px;border-radius:3px;
+  background:linear-gradient(180deg,var(--sea),var(--mid))}
+h3{font-size:16px;margin:22px 0 10px;color:var(--mid)}
+p{margin:10px 0}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:15px;min-width:560px}
+
+th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}
+thead th{background:var(--foam);color:var(--deep);font-size:14px;letter-spacing:.04em;
+  border-bottom:2px solid #bfdceb;white-space:nowrap}
+tbody th{width:130px;color:var(--mid);font-weight:600;background:#fafdff;white-space:nowrap}
+tbody tr:hover td,tbody tr:hover th{background:#f4fbff}
+td b,td strong{color:var(--deep)}
+code{font-family:"Cascadia Mono",Consolas,"SF Mono",Menlo,monospace;font-size:13.5px;
+  background:#eaf4fa;border:1px solid #d5e7f0;border-radius:6px;padding:1px 7px;color:#0b4f70}
+.figure{background:linear-gradient(180deg,#ffffff,#f7fcfe)}
+.figure svg{width:100%;height:auto;display:block}
+.figure figcaption{color:var(--muted);font-size:13.5px;margin-top:12px;line-height:1.7}
+.figure .lbl{font-family:inherit}
+.chain{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.step{background:#f7fcfe;border:1px solid var(--line);border-radius:14px;padding:14px 16px;position:relative}
+.step em{display:block;font-style:normal;font-size:12px;letter-spacing:.18em;color:var(--sea);
+  text-transform:uppercase;margin-bottom:6px}
+.step b{display:block;font-size:15px;margin-bottom:4px;color:var(--deep)}
+.step span{font-size:13.5px;color:var(--muted);line-height:1.6}
+.grid2{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.note{background:#f7fcfe;border:1px dashed #bfdceb;border-radius:14px;padding:16px 18px;font-size:14.5px}
+.note h3{margin:0 0 8px}
+ul.tight{margin:8px 0 0;padding-left:20px}
+ul.tight li{margin:5px 0;font-size:14.5px}
+.tcap{margin:12px 0 0;color:var(--muted);font-size:13px}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:8px 20px 40px}
+@media (max-width:640px){
+  .card{padding:20px 18px;border-radius:14px}
+  tbody th{width:104px}
+}
+@media print{
+  body{background:#fff}
+  header{background:#0d5c86 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .card{box-shadow:none;break-inside:avoid;page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<header>
+  <p class="kicker">物理海洋学 · 上层海洋动力学</p>
+  <h1>朗缪尔环流<span>Langmuir Circulation</span></h1>
+  <div class="chips">
+    <span>风生混合层</span><span>次级环流 / 涡管</span><span>Craik–Leibovich 涡力</span>
+    <span>朗缪尔湍流</span><span>海面条纹</span>
+  </div>
+</header>
+<div class="wrap">
+
+  <section class="card lead">
+    <p class="tag">一 句 话 定 义</p>
+    <p>风生混合层中<strong>平行于风向、反向旋转</strong>的近表层涡管（roll）：它把表面物质向条带中心<strong>汇聚下潜</strong>，是海洋上层混合与海气交换的主控机制之一。</p>
+  </section>
+
+  <section class="card">
+    <h2>核心特征</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>项目</th><th>内容</th></tr></thead>
+        <tbody>
+          <tr><th>定义</th><td>风生混合层中平行于风向、反向旋转的近表层涡管（roll），属海洋上层<b>次级环流</b>，即叠加在平均流之上的有组织流动结构</td></tr>
+          <tr><th>尺度</th><td>相邻辐聚带（海面条纹）间距约 <b>10–100 m</b>，相当涡管横断面尺度；顺风向延伸数百米至数公里；垂向贯穿整个混合层</td></tr>
+          <tr><th>生成机制</th><td>风应力 + 表面波。Craik–Leibovich 理论：波致<b>斯托克斯漂移</b>与风生剪切耦合，产生 <b>CL 涡力</b> <code>u<sub>S</sub> × ω</code> 驱动环流</td></tr>
+          <tr><th>判据</th><td>海面出现顺风向条纹（“风窗”）、浮沫/气泡成线；朗缪尔数 <code>La = √(u<sub>*</sub> / u<sub>S</sub>)</code> 越小，越易形成且强度越大</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="tcap">表 1　朗缪尔环流的基本特征</p>
+  </section>
+
+  <figure class="card figure">
+    <svg viewBox="0 0 720 470" role="img" aria-label="朗缪尔环流横风向剖面示意图：两列反向旋转涡管与海面辐聚、辐散带">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#fbfeff"/><stop offset="100%" stop-color="#e6f4fa"/>
+        </linearGradient>
+        <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#b9e4f5"/><stop offset="60%" stop-color="#5fb4d8"/>
+          <stop offset="100%" stop-color="#1e6f95"/>
+        </linearGradient>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="#0b3f5e"/>
+        </marker>
+        <marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="#d9821f"/>
+        </marker>
+        <marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="#17714a"/>
+        </marker>
+      </defs>
+
+      <rect x="0" y="0" width="720" height="155" fill="url(#sky)"/>
+      <rect x="0" y="155" width="720" height="315" fill="url(#water)"/>
+
+      <text x="360" y="28" text-anchor="middle" font-size="14" fill="#3c6d86">风 / 波浪方向 ⊗ 垂直纸面向里（纸面 = 横风向剖面）</text>
+
+      <line x1="110" y1="76" x2="470" y2="76" stroke="#8fb6c9" stroke-width="1.2" stroke-dasharray="5 4"/>
+      <line x1="110" y1="68" x2="110" y2="88" stroke="#8fb6c9" stroke-width="1.2"/>
+      <line x1="470" y1="68" x2="470" y2="88" stroke="#8fb6c9" stroke-width="1.2"/>
+      <text x="290" y="62" text-anchor="middle" font-size="13" fill="#4b788f">相邻辐聚带（条纹）间距 L ≈ 10–100 m</text>
+
+      <path d="M76 152 q11 -7 22 0 t22 0 t22 0 t22 0" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" opacity="0.95"/>
+      <path d="M436 152 q11 -7 22 0 t22 0 t22 0 t22 0" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" opacity="0.95"/>
+
+      <line x1="0" y1="155" x2="720" y2="155" stroke="#7fc6e2" stroke-width="2.5"/>
+
+      <path d="M285 180 L124 180" fill="none" stroke="#0b3f5e" stroke-width="3" marker-end="url(#ar)"/>
+      <path d="M295 180 L456 180" fill="none" stroke="#0b3f5e" stroke-width="3" marker-end="url(#ar)"/>
+
+      <circle cx="200" cy="285" r="90" fill="none" stroke="#0b3f5e" stroke-width="1" stroke-dasharray="4 6" opacity="0.35"/>
+      <circle cx="380" cy="285" r="90" fill="none" stroke="#0b3f5e" stroke-width="1" stroke-dasharray="4 6" opacity="0.35"/>
+      <path d="M200 195 A90 90 0 0 0 122.06 330" fill="none" stroke="#0b3f5e" stroke-width="3" marker-end="url(#ar)" opacity="0.9"/>
+      <path d="M122.06 330 A90 90 0 0 0 277.94 240" fill="none" stroke="#0b3f5e" stroke-width="3" marker-end="url(#ar)" opacity="0.9"/>
+      <path d="M380 195 A90 90 0 0 1 457.94 330" fill="none" stroke="#0b3f5e" stroke-width="3" marker-end="url(#ar)" opacity="0.9"/>
+      <path d="M457.94 330 A90 90 0 0 1 302.06 240" fill="none" stroke="#0b3f5e" stroke-width="3" marker-end="url(#ar)" opacity="0.9"/>
+
+      <path d="M110 205 L110 258" fill="none" stroke="#e08d2b" stroke-width="3" marker-end="url(#aro)"/>
+      <path d="M470 205 L470 258" fill="none" stroke="#e08d2b" stroke-width="3" marker-end="url(#aro)"/>
+      <path d="M290 258 L290 205" fill="none" stroke="#1f7a4d" stroke-width="3" marker-end="url(#arg)"/>
+
+      <text x="110" y="432" text-anchor="middle" font-size="15" fill="#ffe1b8">辐聚带 · 下潜</text>
+      <text x="290" y="432" text-anchor="middle" font-size="15" fill="#bff0d5">辐散带 · 上升</text>
+      <text x="470" y="432" text-anchor="middle" font-size="15" fill="#ffe1b8">辐聚带 · 下潜</text>
+      <text x="360" y="462" text-anchor="middle" font-size="13" fill="#e3f2fa" opacity="0.92">两列涡管反向旋转（左：逆时针／右：顺时针），共享上升支与下潜支</text>
+    </svg>
+    <figcaption><b>图 1</b>　朗缪尔环流横风向剖面（示意）。两列反向旋转的涡管在表层形成相间的辐聚带（下潜，白色曲线表示浮沫与气泡聚集成的条纹）与辐散带（上升）；纸面为横风向剖面，风向垂直纸面向里，实际涡管可沿风向延伸数百米以上。</figcaption>
+  </figure>
+  <section class="card">
+    <h2>流场与效应</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>项目</th><th>内容</th></tr></thead>
+        <tbody>
+          <tr><th>流场特征</th><td>表层<b>辐聚带（下潜）与辐散带（上升）交替</b>排列，顺风向呈条带状；条带中心为下潜区、两侧为上升区，横断面构成一对对反向旋转的涡管</td></tr>
+          <tr><th>主要效应</th><td>① 增强垂向混合、加深混合层；② 卷入并输运气泡、浮游生物与污染物；③ 改变海气通量与气体交换效率；④ 朗缪尔湍流强度显著大于纯剪切湍流</td></tr>
+          <tr><th>观测手段</th><td>ADCP / 声学流速剖面、漂移浮标、卫星与航拍条纹、船舶尾迹与浮沫带扩散观测</td></tr>
+          <tr><th>模拟方法</th><td>大涡模拟（LES）叠加随机波场（相位平均/斯托克斯漂移）为主流工具；浪流耦合模式用于业务化海洋预报</td></tr>
+          <tr><th>意义</th><td>上层海洋混合、热量收支与生物地球化学循环的关键机制；海气耦合模式与上层海洋参数化必须加以考虑</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="tcap">表 2　朗缪尔环流的流场特征与效应</p>
+  </section>
+
+  <section class="card">
+    <h2>生成机制：一条因果链</h2>
+    <div class="chain">
+      <div class="step"><em>Step 1</em><b>风应力</b><span>风驱动表层剪切，同时激起风浪</span></div>
+      <div class="step"><em>Step 2</em><b>表面波 → 斯托克斯漂移</b><span>波致拉格朗日输运 <code>u<sub>S</sub></code>，沿波向且随深度迅速衰减</span></div>
+      <div class="step"><em>Step 3</em><b>涡力耦合</b><span>漂移与风生涡度 ω 作用产生 <b>CL 涡力</b> <code>u<sub>S</sub> × ω</code>，把表层水驱向辐聚带</span></div>
+      <div class="step"><em>Step 4</em><b>形成涡管</b><span>辐聚下潜 + 反向旋转，间距与强度由混合层深度和波场确定</span></div>
+    </div>
+    <div class="grid2" style="margin-top:20px">
+      <div class="note">
+        <h3>关键参数</h3>
+        <ul class="tight">
+          <li>朗缪尔数 <code>La = √(u<sub>*</sub> / u<sub>S</sub>)</code>：La ≪ 1 时朗缪尔湍流占优</li>
+          <li>湍流朗缪尔数 <code>La<sub>t</sub></code>：判别风生剪切湍流与波致湍流的相对重要性</li>
+          <li>典型量级：条纹间距 10–100 m，下潜速度约 cm/s</li>
+        </ul>
+      </div>
+      <div class="note">
+        <h3>一句话总结</h3>
+        <p>风把波与剪切“拧”成一对对反向旋转的涡管，把物质向条带中心汇聚并下潜 —— 这就是朗缪尔环流，海洋上层混合的主控机制之一。</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>物理海洋学 · 上层海洋动力学速览<br>术语对照：Langmuir circulation ／ Langmuir turbulence ／ Stokes drift ／ Craik–Leibovich vortex force</footer>
+</body>
+</html>
